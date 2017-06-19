@@ -1,0 +1,121 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:      {{{name}}}
+# Required-Start:  
+# Required-Stop:   
+# Default-Start:   {{{runLevels}}}
+# Default-Stop:    0 1 6
+# Short-Description: Start {{{name}}} at boot time
+# Description: Enable {{{name}}} service.
+### END INIT INFO
+
+# chkconfig:   {{{runLevels}}} 99 1
+# description: {{{name}}}
+
+set_pid () {
+  unset PID
+  _PID=`head -1 "{{{pidFile}}}" 2>/dev/null`
+  if [ $_PID ]; then
+  kill -0 $_PID 2>/dev/null && PID=$_PID
+  fi
+}
+
+restart () {
+  stop
+  start
+}
+
+start () {
+  CNT=5
+
+  set_pid
+
+  if [ -z "$PID" ]; then
+  echo starting {{{name}}}
+
+  "{{{deepstreamExec}}}" {{{deepstreamArgs}}} >> {{{stdOut}}} 2>> {{{errOut}}} &
+
+  echo $! > "{{{pidFile}}}"
+
+  while [ : ]; do
+    set_pid
+
+    if [ -n "$PID" ]; then
+    echo started {{{name}}}
+    break
+    else
+    if [ $CNT -gt 0 ]; then
+      sleep 1
+      CNT=`expr $CNT - 1`
+    else
+      echo ERROR - failed to start {{{name}}}
+      break
+    fi
+    fi
+  done
+  else
+  echo {{{name}}} is already started
+  fi
+}
+
+status () {
+  set_pid
+
+  if [ -z "$PID" ]; then
+  exit 1
+  else
+  exit 0
+  fi
+}
+
+stop () {
+  CNT=5
+
+  set_pid
+
+  if [ -n "$PID" ]; then
+  echo stopping {{{name}}}
+
+  kill $PID
+
+  while [ : ]; do
+    set_pid
+
+    if [ -z "$PID" ]; then
+    rm "{{{pidFile}}}"
+    echo stopped {{{name}}}
+    break
+    else
+    if [ $CNT -gt 0 ]; then
+      sleep 1
+      CNT=`expr $CNT - 1`
+    else
+      echo ERROR - failed to stop {{{name}}}
+      break
+    fi
+    fi
+  done
+  else
+  echo {{{name}}} is already stopped
+  fi
+}
+
+case $1 in
+  restart)
+  restart
+  ;;
+  start)
+  start
+  ;;
+  status)
+  status
+  ;;
+  stop)
+  stop
+  ;;
+  *)
+  echo "usage: $0 <restart|start|status|stop>"
+  exit 1
+  ;;
+esac

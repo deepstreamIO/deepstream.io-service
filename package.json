@@ -1,0 +1,25 @@
+{
+  "name": "deepstream.io-service",
+  "version": "2.3.6",
+  "description": "a service file generator for deepstream.io",
+  "main": "src/service.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deepstreamIO/deepstream.io-service.git"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "mustache": "^2.3.0"
+  },
+  "devDependencies": {},
+  "author": "deepstreamHub GmbH",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/deepstreamIO/deepstream.io-service/issues"
+  },
+  "homepage": "http://deepstream.io",
+  "eslintConfig": {
+    "extends": "deepstream"
+  }
+}
