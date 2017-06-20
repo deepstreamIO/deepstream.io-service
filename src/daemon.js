@@ -18,7 +18,7 @@ function start (options) {
 
       // If the number of periodic starts exceeds the max, kill the process
       if (starts >= options.maxRetries) {
-        if ((Date.now() - ( max * 1000 ) - startTime) > 0) {      
+        if ((Date.now() - ( max * 1000 ) - startTime) > 0) {
           console.error(
             `Too many restarts within the last ${max} seconds. Please check the script.`
           )
@@ -61,7 +61,7 @@ function start (options) {
 
     // Fork the child process piping stdin/out/err to the parent
     child = spawn(options.processExec, ['start'].concat(process.argv.slice(2)), {
-      env: process.env, 
+      env: process.env,
       silent:true
     })
 
@@ -114,7 +114,7 @@ function start (options) {
 
 module.exports.start = (daemonOptions) => {
   const options = daemonOptions || {}
-  start(Object.assign({ 
+  start(Object.assign({
     name: 'deepstream',
     exitOnError: false,
     growPercentage: 0.25,

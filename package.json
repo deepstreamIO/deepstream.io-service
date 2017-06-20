@@ -1,6 +1,6 @@
 {
   "name": "deepstream.io-service",
-  "version": "2.3.6",
+  "version": "0.1.0",
   "description": "a service file generator for deepstream.io",
   "main": "src/service.js",
   "scripts": {},
