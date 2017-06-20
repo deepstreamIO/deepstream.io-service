@@ -4,8 +4,17 @@ const Mustache = require('mustache')
 const fs = require('fs')
 const path = require('path')
 
-const systemdTemplate = fs.readFileSync(path.join(__dirname, './template/systemd'), 'utf8')
-const initdTemplate = fs.readFileSync(path.join(__dirname, './template/initd'), 'utf8')
+let systemdTemplate
+let initdTemplate
+
+try {
+  const nexeres = require('nexeres') // eslint-disable-line
+  systemdTemplate = nexeres.get('node_modules/deepstream.io-service/src/template/systemd').toString('utf8')
+  initdTemplate = nexeres.get('node_modules/deepstream.io-service/src/template/initd').toString('utf8')
+} catch (e) {
+  systemdTemplate = fs.readFileSync(path.join(__dirname, './template/systemd'), 'utf8')
+  initdTemplate = fs.readFileSync(path.join(__dirname, './template/initd'), 'utf8')
+}
 
 /**
  * Returns true if system support systemd daemons
@@ -56,6 +65,9 @@ function deleteSystemD (name, callback) {
  * to the normal system install
  */
 function setupSystemD (name, options, callback) {
+  options.stdOut = (options.logDir && `${options.logDir}/${name}-out.log`) || null
+  options.stdErr = (options.logDir && `${options.logDir}/${name}-err.log`) || null
+
   const filepath = `/etc/systemd/system/${name}.service`
 
   const script = Mustache.render(systemdTemplate, options)
@@ -97,7 +109,7 @@ function setupSystemD (name, options, callback) {
 /**
  * Deletes a service file from /etc/init.d/
  */
-function deleteSystemD (name, callback) {
+function deleteSystemV (name, callback) {
   const filepath = `/etc/init.d/${name}`
   console.log(`Removing service on: ${filepath}`)
   fs.exists(filepath, exists => {
@@ -122,13 +134,16 @@ function deleteSystemD (name, callback) {
  * to the normal system install
  */
 function setupSystemV (name, options, callback) {
-  options.stdOut = options.stdOut || '/dev/null'
-  options.errOut = options.errOut || '&1'
+  options.stdOut = (options.logDir && `${options.logDir}/${name}-out.log`) || '/dev/null'
+  options.stdErr = (options.logDir && `${options.logDir}/${name}-err.log`) || '&1'
 
   const script = Mustache.render(initdTemplate, options)
-  console.log(script)
-  return
 
+  if (options.dryRun) {
+    console.log(script)
+    return
+  }
+  
   const filepath = `/etc/init.d/${name}`
   console.log(`Installing service on: ${filepath}`)
   fs.exists(filepath, exists => {
@@ -165,9 +180,8 @@ module.exports.add = function (name, options, callback) {
   options.name = name
   options.pidFile = options.pidFile || `/var/run/${name}.pid`
 
-  options.deepstreamExec = options.deepstreamExec || '/usr/bin/deepstream'
-  options.errOut = options.errOut || `/var/log/deepstream/${name}-err.log`
-  options.stdOut = options.stdOut || `/var/log/deepstream/${name}-log.log`
+  options.exec = options.exec
+  options.logDir = options.logDir || `/var/log/deepstream`
   options.user = options.user || 'root'
   options.group = options.group || 'root'
 
@@ -213,8 +227,8 @@ module.exports.remove = function (name, callback) {
  */
 module.exports.start = function (name, callback) {
   if (hasSystemD() || hasSystemV()) {
-    exec(`service ${name} start`, err => {
-      callback(err, 'Service started')
+    exec(`service ${name} start`, (err, stdOut, stdErr) => {
+      callback(err || stdErr, stdOut)
     })
   } else {
     callback('Only systemd and init.d services are currently supported.')
@@ -228,8 +242,8 @@ module.exports.start = function (name, callback) {
  */
 module.exports.stop = function (name, callback) {
   if (hasSystemD() || hasSystemV()) {
-    exec(`service ${name} stop`, err => {
-      callback(err, 'Service stopped')
+    exec(`service ${name} stop`, (err, stdOut, stdErr) => {
+      callback(err || stdErr, stdOut)
     })
   } else {
     callback('Only systemd and init.d services are currently supported.')

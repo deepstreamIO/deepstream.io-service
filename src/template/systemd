@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 StandardOutput={{{stdOut}}}
-StandardError={{{errOut}}}
-ExecStart={{{deepstreamExec}}} {{{deepstreamArgs}}}
+StandardError={{{stdErr}}}
+ExecStart={{{exec}}} {{{deepstreamArgs}}}
 Restart=always
 User={{{user}}}
 Group={{{group}}}

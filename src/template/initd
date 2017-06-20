@@ -34,7 +34,8 @@ start () {
   if [ -z "$PID" ]; then
   echo starting {{{name}}}
 
-  "{{{deepstreamExec}}}" {{{deepstreamArgs}}} >> {{{stdOut}}} 2>> {{{errOut}}} &
+  mkdir -p {{{logDir}}}
+  "{{{exec}}}" {{{deepstreamArgs}}} >> {{{stdOut}}} 2>> {{{stdErr}}} &
 
   echo $! > "{{{pidFile}}}"
 
