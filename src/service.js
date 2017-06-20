@@ -182,8 +182,6 @@ module.exports.add = function (name, options, callback) {
   }
   options.deepstreamArgs = ['daemon'].concat(options.programArgs).join(' ')
 
-  console.log(options.dryRun)
-
   if (hasSystemD()) {
     setupSystemD(name, options, callback)
   } else if (hasSystemV()) {
