@@ -1,21 +1,23 @@
+return function (d) {
+`
 #!/bin/bash
 
 ### BEGIN INIT INFO
-# Provides:      {{{name}}}
+# Provides:      ${d.name}
 # Required-Start:
 # Required-Stop:
-# Default-Start:   {{{runLevels}}}
+# Default-Start:   ${d.runLevels}
 # Default-Stop:    0 1 6
-# Short-Description: Start {{{name}}} at boot time
-# Description: Enable {{{name}}} service.
+# Short-Description: Start ${d.name} at boot time
+# Description: Enable ${d.name} service.
 ### END INIT INFO
 
-# chkconfig:   {{{runLevels}}} 99 1
-# description: {{{name}}}
+# chkconfig:   ${d.runLevels} 99 1
+# description: ${d.name}
 
 set_pid () {
   unset PID
-  _PID=`head -1 "{{{pidFile}}}" 2>/dev/null`
+  _PID=\`head -1 "${d.pidFile}" 2>/dev/null\`
   if [ $_PID ]; then
   kill -0 $_PID 2>/dev/null && PID=$_PID
   fi
@@ -32,31 +34,31 @@ start () {
   set_pid
 
   if [ -z "$PID" ]; then
-  echo starting {{{name}}}
+  echo starting ${d.name}
 
-  mkdir -p {{{logDir}}}
-  "{{{exec}}}" {{{deepstreamArgs}}} >> {{{stdOut}}} 2>> {{{stdErr}}} &
+  mkdir -p ${d.logDir}
+  "${d.exec}" ${d.deepstreamArgs} >> ${d.stdOut} 2>> ${d.stdErr} &
 
-  echo $! > "{{{pidFile}}}"
+  echo $! > "${d.pidFile}"
 
   while [ : ]; do
     set_pid
 
     if [ -n "$PID" ]; then
-    echo started {{{name}}}
+    echo started ${d.name}
     break
     else
     if [ $CNT -gt 0 ]; then
       sleep 1
-      CNT=`expr $CNT - 1`
+      CNT=\`expr $CNT - 1\`
     else
-      echo ERROR - failed to start {{{name}}}
+      echo ERROR - failed to start ${d.name}
       break
     fi
     fi
   done
   else
-  echo {{{name}}} is already started
+  echo ${d.name} is already started
   fi
 }
 
@@ -76,7 +78,7 @@ stop () {
   set_pid
 
   if [ -n "$PID" ]; then
-  echo stopping {{{name}}}
+  echo stopping ${d.name}
 
   kill $PID
 
@@ -84,21 +86,21 @@ stop () {
     set_pid
 
     if [ -z "$PID" ]; then
-    rm "{{{pidFile}}}"
-    echo stopped {{{name}}}
+    rm "${d.pidFile}"
+    echo stopped ${d.name}
     break
     else
     if [ $CNT -gt 0 ]; then
       sleep 1
-      CNT=`expr $CNT - 1`
+      CNT=\`expr $CNT - 1\`
     else
-      echo ERROR - failed to stop {{{name}}}
+      echo ERROR - failed to stop ${d.name}
       break
     fi
     fi
   done
   else
-  echo {{{name}}} is already stopped
+  echo ${d.name} is already stopped
   fi
 }
 
@@ -120,3 +122,6 @@ case $1 in
   exit 1
   ;;
 esac
+
+`
+}

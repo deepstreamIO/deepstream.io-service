@@ -1,20 +1,10 @@
 const exec = require('child_process').exec
-const Mustache = require('mustache')
 
 const fs = require('fs')
 const path = require('path')
 
-let systemdTemplate
-let initdTemplate
-
-try {
-  const nexeres = require('nexeres') // eslint-disable-line
-  systemdTemplate = nexeres.get('node_modules/deepstream.io-service/src/template/systemd').toString('utf8')
-  initdTemplate = nexeres.get('node_modules/deepstream.io-service/src/template/initd').toString('utf8')
-} catch (e) {
-  systemdTemplate = fs.readFileSync(path.join(__dirname, './template/systemd'), 'utf8')
-  initdTemplate = fs.readFileSync(path.join(__dirname, './template/initd'), 'utf8')
-}
+const systemdTemplate = require('./template/systemd')
+const initdTemplate = require('./template/initd')
 
 /**
  * Returns true if system support systemd daemons
@@ -70,7 +60,7 @@ function setupSystemD (name, options, callback) {
 
   const filepath = `/etc/systemd/system/${name}.service`
 
-  const script = Mustache.render(systemdTemplate, options)
+  const script = systemdTemplate(options)
 
   if (options.dryRun) {
     console.log(script)
@@ -137,7 +127,7 @@ function setupSystemV (name, options, callback) {
   options.stdOut = (options.logDir && `${options.logDir}/${name}-out.log`) || '/dev/null'
   options.stdErr = (options.logDir && `${options.logDir}/${name}-err.log`) || '&1'
 
-  const script = Mustache.render(initdTemplate, options)
+  const script = initdTemplate(options)
 
   if (options.dryRun) {
     console.log(script)
