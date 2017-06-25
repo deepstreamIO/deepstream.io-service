@@ -1,4 +1,4 @@
-return function (d) {
+module.exports = function (d) {
 return `
 #!/bin/bash
 
