@@ -70,7 +70,6 @@ function setupSystemD (name, options, callback) {
   console.log(`Installing service on: ${filepath}`)
   fs.exists(filepath, exists => {
     if(!exists) {
-      const script = Mustache.render(systemdTemplate, options)
       fs.writeFile(filepath,script, err => {
         if (err) {
           callback(err)
@@ -138,7 +137,6 @@ function setupSystemV (name, options, callback) {
   console.log(`Installing service on: ${filepath}`)
   fs.exists(filepath, exists => {
     if(!exists) {
-      const script = Mustache.render(initdTemplate, options)
       fs.writeFile(filepath,script, err => {
         if (err) {
           callback(err)
@@ -186,13 +184,13 @@ module.exports.add = function (name, options, callback) {
   }
   options.deepstreamArgs = ['daemon'].concat(options.programArgs).join(' ')
 
-  if (hasSystemD()) {
+//  if (hasSystemD()) {
     setupSystemD(name, options, callback)
-  } else if (hasSystemV()) {
-    setupSystemV(name, options, callback)
-  } else {
-    callback('Only systemd and init.d services are currently supported.')
-  }
+  // } else if (hasSystemV()) {
+  //   setupSystemV(name, options, callback)
+  // } else {
+  //   callback('Only systemd and init.d services are currently supported.')
+  // }
 }
 
 /**

@@ -1,5 +1,5 @@
 module.exports = function (d) {
-`
+return `
 [Unit]
 Description=${d.name}
 After=network.target

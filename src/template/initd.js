@@ -1,5 +1,5 @@
 return function (d) {
-`
+return `
 #!/bin/bash
 
 ### BEGIN INIT INFO
