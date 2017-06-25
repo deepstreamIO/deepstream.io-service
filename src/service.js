@@ -184,13 +184,13 @@ module.exports.add = function (name, options, callback) {
   }
   options.deepstreamArgs = ['daemon'].concat(options.programArgs).join(' ')
 
-//  if (hasSystemD()) {
+ if (hasSystemD()) {
     setupSystemD(name, options, callback)
-  // } else if (hasSystemV()) {
-  //   setupSystemV(name, options, callback)
-  // } else {
-  //   callback('Only systemd and init.d services are currently supported.')
-  // }
+  } else if (hasSystemV()) {
+    setupSystemV(name, options, callback)
+  } else {
+    callback('Only systemd and init.d services are currently supported.')
+  }
 }
 
 /**
