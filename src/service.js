@@ -132,7 +132,7 @@ function setupSystemV (name, options, callback) {
     console.log(script)
     return
   }
-  
+
   const filepath = `/etc/init.d/${name}`
   console.log(`Installing service on: ${filepath}`)
   fs.exists(filepath, exists => {
@@ -231,6 +231,21 @@ module.exports.start = function (name, callback) {
 module.exports.stop = function (name, callback) {
   if (hasSystemD() || hasSystemV()) {
     exec(`service ${name} stop`, (err, stdOut, stdErr) => {
+      callback(err || stdErr, stdOut)
+    })
+  } else {
+    callback('Only systemd and init.d services are currently supported.')
+  }
+}
+
+/**
+ * Get the status of the service, either from systemd or init.d
+ * @param {String}   name the name of the service
+ * @param {Function} callback called when complete
+ */
+module.exports.status = function (name, callback) {
+  if (hasSystemD() || hasSystemV()) {
+    exec(`service ${name} status`, (err, stdOut, stdErr) => {
       callback(err || stdErr, stdOut)
     })
   } else {
