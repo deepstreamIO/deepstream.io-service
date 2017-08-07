@@ -252,3 +252,18 @@ module.exports.status = function (name, callback) {
     callback('Only systemd and init.d services are currently supported.')
   }
 }
+
+/**
+ * Restart the service, either from systemd or init.d
+ * @param {String}   name the name of the service
+ * @param {Function} callback called when complete
+ */
+module.exports.restart = function (name, callback) {
+  if (hasSystemD() || hasSystemV()) {
+    exec(`service ${name} restart`, (err, stdOut, stdErr) => {
+      callback(err || stdErr, stdOut)
+    })
+  } else {
+    callback('Only systemd and init.d services are currently supported.')
+  }
+}

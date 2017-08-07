@@ -66,8 +66,10 @@ status () {
   set_pid
 
   if [ -z "$PID" ]; then
+  echo ${d.name} is not running
   exit 1
   else
+  echo ${d.name} is running
   exit 0
   fi
 }
