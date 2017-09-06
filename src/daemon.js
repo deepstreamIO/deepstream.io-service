@@ -1,7 +1,7 @@
 // Handle input parameters
 require('colors')
 const spawn = require('child_process').spawn
-const max = 6
+const maxMilliseconds = 5000
 
 function start (options) {
   let startTime = null
@@ -15,12 +15,11 @@ function start (options) {
    */
   function monitor() {
     if(!child.pid) {
-
       // If the number of periodic starts exceeds the max, kill the process
       if (starts >= options.maxRetries) {
-        if ((Date.now() - ( max * 1000 ) - startTime) > 0) {
+        if ((Date.now() - startTime) > maxMilliseconds) {
           console.error(
-            `Too many restarts within the last ${max} seconds. Please check the script.`
+            `Too many restarts within the last ${maxMilliseconds / 1000} seconds. Please check the script.`
           )
           process.exit(1)
         }
@@ -55,14 +54,13 @@ function start (options) {
       setTimeout(() => {
         startTime = null
         starts = 0
-      }, ( max * 1000 ) + 1)
+      }, ( maxMilliseconds ) + 2000)
     }
     starts += 1
 
     // Fork the child process piping stdin/out/err to the parent
     child = spawn(options.processExec, ['start'].concat(process.argv.slice(2)), {
-      env: process.env,
-      silent:true
+      env: process.env
     })
 
     child.stdout.on('data', function (data) {
