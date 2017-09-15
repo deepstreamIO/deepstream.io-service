@@ -34,31 +34,35 @@ start () {
   set_pid
 
   if [ -z "$PID" ]; then
-  echo starting ${d.name}
+    echo starting ${d.name}
 
-  mkdir -p ${d.logDir}
-  "${d.exec}" ${d.deepstreamArgs} >> ${d.stdOut} 2>> ${d.stdErr} &
-
-  echo $! > "${d.pidFile}"
-
-  while [ : ]; do
-    set_pid
-
-    if [ -n "$PID" ]; then
-    echo started ${d.name}
-    break
-    else
-    if [ $CNT -gt 0 ]; then
-      sleep 1
-      CNT=\`expr $CNT - 1\`
-    else
-      echo ERROR - failed to start ${d.name}
-      break
+    if [ -e "/var/deepstream/DEEPSTREAM_SETUP" ]; then
+        bash "/var/deepstream/scripts/DEEPSTREAM_SETUP"
     fi
-    fi
-  done
+
+    mkdir -p ${d.logDir}
+    "${d.exec}" ${d.deepstreamArgs} >> ${d.stdOut} 2>> ${d.stdErr} &
+
+    echo $! > "${d.pidFile}"
+
+    while [ : ]; do
+      set_pid
+
+      if [ -n "$PID" ]; then
+        echo started ${d.name}
+        break
+        else
+        if [ $CNT -gt 0 ]; then
+          sleep 1
+          CNT=\`expr $CNT - 1\`
+        else
+          echo ERROR - failed to start ${d.name}
+          break
+        fi
+      fi
+    done
   else
-  echo ${d.name} is already started
+    echo ${d.name} is already started
   fi
 }
 

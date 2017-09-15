@@ -39,7 +39,7 @@ function deleteSystemD (name, callback) {
         let cmd = 'systemctl daemon-reload'
         console.log('Running %s...', cmd)
         exec(cmd, err => {
-          callback(err, 'SystemD service registered succesfully')
+          callback(err, 'SystemD service removed succesfully')
         })
       })
     } else {
@@ -108,7 +108,7 @@ function deleteSystemV (name, callback) {
           callback(err)
           return
         }
-        callback(err, 'SystemD service registered succesfully')
+        callback(err, 'SystemD service removed succesfully')
       })
     } else {
       callback(`Service doesn't exists, nothing to uninstall`)
