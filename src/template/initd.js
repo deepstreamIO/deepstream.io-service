@@ -37,7 +37,11 @@ start () {
     echo starting ${d.name}
 
     if [ -e "/var/deepstream/DEEPSTREAM_SETUP" ]; then
-        bash "/var/deepstream/scripts/DEEPSTREAM_SETUP"
+      bash "/var/deepstream/scripts/DEEPSTREAM_SETUP"
+    fi
+
+    if [ -e "/var/deepstream/DEEPSTREAM_ENV_VARS" ]; then
+      source "/var/deepstream/DEEPSTREAM_ENV_VARS"
     fi
 
     mkdir -p ${d.logDir}
