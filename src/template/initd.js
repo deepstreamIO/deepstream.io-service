@@ -83,7 +83,7 @@ status () {
 }
 
 stop () {
-  CNT=5
+  CNT=30
 
   set_pid
 
